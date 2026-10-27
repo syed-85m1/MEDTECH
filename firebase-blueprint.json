@@ -1,0 +1,147 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Base user account profile for patient, doctor, or administrator",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique authentication UID" },
+        "email": { "type": "string", "format": "email", "description": "User email address" },
+        "displayName": { "type": "string", "maxLength": 100, "description": "Full name" },
+        "role": { "type": "string", "enum": ["patient", "doctor", "admin"], "description": "User role on platform" },
+        "phone": { "type": "string", "maxLength": 20, "description": "Contact phone number" },
+        "createdAt": { "type": "string", "description": "Timestamp of creation" },
+        "updatedAt": { "type": "string", "description": "Timestamp of update" }
+      },
+      "required": ["uid", "email", "displayName", "role"]
+    },
+    "DoctorProfile": {
+      "title": "DoctorProfile",
+      "description": "Professional profile and credentials of registered doctors",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "UID of the doctor user" },
+        "name": { "type": "string", "maxLength": 100, "description": "Doctor full title and name" },
+        "specialty": { "type": "string", "maxLength": 80, "description": "Medical specialty" },
+        "clinicName": { "type": "string", "maxLength": 120, "description": "Clinic or hospital affiliation" },
+        "clinicAddress": { "type": "string", "maxLength": 200, "description": "Full physical clinic address" },
+        "latitude": { "type": "number", "description": "Clinic latitude for distance calculation" },
+        "longitude": { "type": "number", "description": "Clinic longitude for distance calculation" },
+        "phone": { "type": "string", "maxLength": 20, "description": "Clinic phone" },
+        "consultationHours": { "type": "string", "maxLength": 100, "description": "Consultation schedule hours" },
+        "fee": { "type": "number", "description": "Consultation fee amount" },
+        "isVerified": { "type": "boolean", "description": "Whether administrator verified credentials" },
+        "verificationStatus": { "type": "string", "enum": ["pending", "verified", "rejected", "flagged"], "description": "Verification lifecycle status" },
+        "licenseNumber": { "type": "string", "maxLength": 50, "description": "Medical license number" },
+        "medicalBoard": { "type": "string", "maxLength": 100, "description": "State or national medical board" },
+        "bio": { "type": "string", "maxLength": 1000, "description": "Professional biographical summary" },
+        "education": { "type": "string", "maxLength": 200, "description": "Medical degree and qualifications" }
+      },
+      "required": ["userId", "name", "specialty", "clinicName", "licenseNumber", "isVerified"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Medical appointment booking between a patient and a doctor",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Appointment document identifier" },
+        "patientId": { "type": "string", "description": "Patient user UID" },
+        "patientName": { "type": "string", "maxLength": 100, "description": "Patient display name" },
+        "doctorId": { "type": "string", "description": "Doctor user UID" },
+        "doctorName": { "type": "string", "maxLength": 100, "description": "Doctor display name" },
+        "doctorSpecialty": { "type": "string", "maxLength": 80, "description": "Specialty" },
+        "date": { "type": "string", "description": "Appointment date YYYY-MM-DD" },
+        "timeSlot": { "type": "string", "maxLength": 20, "description": "Time of appointment" },
+        "status": { "type": "string", "enum": ["requested", "confirmed", "completed", "cancelled"], "description": "Status" },
+        "type": { "type": "string", "enum": ["in-person", "telehealth"], "description": "Consultation mode" },
+        "reason": { "type": "string", "maxLength": 500, "description": "Patient chief complaint or reason" },
+        "doctorNotes": { "type": "string", "maxLength": 1000, "description": "Doctor notes after consultation" },
+        "cancellationReason": { "type": "string", "maxLength": 300, "description": "Reason if cancelled" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["patientId", "doctorId", "date", "timeSlot", "status", "type"]
+    },
+    "MedicalRecord": {
+      "title": "MedicalRecord",
+      "description": "Chronological patient health entry such as diagnosis, prescription, allergy, or lab report",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Record unique ID" },
+        "patientId": { "type": "string", "description": "Patient UID owner" },
+        "doctorId": { "type": "string", "description": "Authoring doctor UID" },
+        "doctorName": { "type": "string", "maxLength": 100, "description": "Authoring doctor name" },
+        "date": { "type": "string", "description": "Encounter or record date YYYY-MM-DD" },
+        "type": { "type": "string", "enum": ["diagnosis", "prescription", "allergy", "lab_report", "visit_summary"], "description": "Category" },
+        "title": { "type": "string", "maxLength": 150, "description": "Condition, medication, or test name" },
+        "description": { "type": "string", "maxLength": 1000, "description": "Clinical summary or test result details" },
+        "code": { "type": "string", "maxLength": 50, "description": "ICD-10 or RxNorm standardized medical code" },
+        "severity": { "type": "string", "enum": ["mild", "moderate", "severe"], "description": "Clinical severity" },
+        "instructions": { "type": "string", "maxLength": 500, "description": "Prescription dosage and intake instructions" },
+        "dosage": { "type": "string", "maxLength": 100, "description": "Medication strength" },
+        "frequency": { "type": "string", "maxLength": 100, "description": "Medication frequency" },
+        "duration": { "type": "string", "maxLength": 100, "description": "Treatment duration" },
+        "doctorSignature": { "type": "string", "maxLength": 100, "description": "Digital timestamp signature" }
+      },
+      "required": ["patientId", "type", "title", "date"]
+    },
+    "RecordAccessGrant": {
+      "title": "RecordAccessGrant",
+      "description": "Patient-directed consent granting or revoking doctor access to medical records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique grant ID: patientId_doctorId" },
+        "patientId": { "type": "string", "description": "UID of consenting patient" },
+        "doctorId": { "type": "string", "description": "UID of doctor receiving access" },
+        "doctorName": { "type": "string", "maxLength": 100, "description": "Doctor name" },
+        "doctorSpecialty": { "type": "string", "maxLength": 80, "description": "Doctor specialty" },
+        "status": { "type": "string", "enum": ["active", "revoked"], "description": "Access state" },
+        "grantedAt": { "type": "string", "description": "Timestamp when consent was granted" },
+        "expiresAt": { "type": "string", "description": "Timestamp when consent expires" }
+      },
+      "required": ["patientId", "doctorId", "status", "grantedAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Immutable security log of sensitive access and administrative verification actions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Log entry unique ID" },
+        "timestamp": { "type": "string", "description": "ISO timestamp" },
+        "actorId": { "type": "string", "description": "UID of user performing action" },
+        "actorName": { "type": "string", "maxLength": 100, "description": "Name of actor" },
+        "actorRole": { "type": "string", "enum": ["patient", "doctor", "admin", "system"], "description": "Role of actor" },
+        "action": { "type": "string", "maxLength": 80, "description": "Event action name" },
+        "targetPatientId": { "type": "string", "maxLength": 128, "description": "Optional patient target" },
+        "details": { "type": "string", "maxLength": 500, "description": "Audit details description" },
+        "securityLevel": { "type": "string", "enum": ["info", "warning", "critical"], "description": "Security rating" }
+      },
+      "required": ["timestamp", "actorId", "actorRole", "action", "details"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profile accounts"
+    },
+    "/doctor_profiles/{doctorId}": {
+      "schema": { "$ref": "#/entities/DoctorProfile" },
+      "description": "Doctor directory profiles and credentials"
+    },
+    "/appointments/{appointmentId}": {
+      "schema": { "$ref": "#/entities/Appointment" },
+      "description": "Booked consultations between patients and doctors"
+    },
+    "/medical_records/{recordId}": {
+      "schema": { "$ref": "#/entities/MedicalRecord" },
+      "description": "Chronological patient health records and timeline entries"
+    },
+    "/record_access_grants/{grantId}": {
+      "schema": { "$ref": "#/entities/RecordAccessGrant" },
+      "description": "Patient-managed consent grants controlling doctor record access"
+    },
+    "/audit_logs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "Immutable audit log of platform operations and record queries"
+    }
+  }
+}

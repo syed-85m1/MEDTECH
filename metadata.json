@@ -1,0 +1,8 @@
+{
+  "name": "MediLink — Your Health, Connected",
+  "description": "A secure, responsive healthcare Progressive Web App connecting patients, doctors, and administrators with health timelines, appointment management, and patient-controlled record access.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
